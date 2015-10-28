@@ -1,0 +1,28 @@
+{
+  "name": "node-open-falcon",
+  "version": "1.0.0",
+  "description": "open-falcon",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/song940/node-open-falcon.git"
+  },
+  "keywords": [
+    "open",
+    "falcon"
+  ],
+  "author": "lsong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/song940/node-open-falcon/issues"
+  },
+  "homepage": "https://github.com/song940/node-open-falcon#readme",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "lodash": "^3.10.1",
+    "superagent": "^1.4.0"
+  }
+}
