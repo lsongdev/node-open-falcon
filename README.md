@@ -1,15 +1,27 @@
-## open-falcon ![NPM version](https://img.shields.io/npm/v/open-falcon.svg?style=flat)
+## open-falcon ![NPM version](https://img.shields.io/npm/v/node-open-falcon.svg?style=flat)
 
-open-falcon
+open-falcon for nodejs.
 
 ### Installation
 ```bash
-$ npm install open-falcon
+$ npm install node-open-falcon --save
 ```
 
 ### Example
 ```js
-var Falcon = require('open-falcon');
+var os     = require('os');
+var Falcon = require('node-open-falcon');
+
+var falcon = new Falcon({
+  endpoint: os.hostname()
+});
+//
+var usage = process.memoryUsage();
+for(var key in usage){
+  falcon.metric('memory.' + key, usage[key]).end();
+}
+
+falcon.send();
 ```
 
 ### API
@@ -47,5 +59,3 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---
-![docor]()
-built upon love by [docor](git+https://github.com/turingou/docor.git) v0.3.0

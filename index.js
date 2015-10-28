@@ -1,5 +1,3 @@
-var os      = require('os');
-var _       = require('lodash');
 var request = require('superagent');
 var debug   = require('debug')('open-falcon');
 
@@ -12,10 +10,25 @@ function Falcon(options){
       api: options
     };
   }
-
-  this.options  = options;
-  this.data     = {};
-  this.queue    = [];
+  var self = this, defaults = {
+    tags        : ''          ,
+    step        : 60          ,
+    value       : 0           ,
+    endpoint    : 'localhost' ,
+    counterType : 'GAUGE'     ,
+    api         : 'http://127.0.0.1:1988/v1/push',
+    timestamp   : function(){
+      return Math.floor(+new Date() / 1000);
+    },
+  };
+  //
+  for(var key in options){
+    defaults[ key ] = options[ key ];
+  }
+  //
+  this.data    = {};
+  this.queue   = [];
+  this.options = defaults;
   return this;
 }
 
@@ -23,7 +36,6 @@ Falcon.COUNTER_TYPE = {
   GAUGE  : 'GAUGE',
   COUNTER: 'COUNTER'
 };
-
 
 Falcon.prototype.use = function(middleware){
   middleware.apply(this, [ this ]);
@@ -35,8 +47,13 @@ Falcon.prototype.set = function(key, value){
   return this;
 };
 
-Falcon.prototype.metric = function(value){
-  this.set.apply(this, [ 'metric', value ]);
+Falcon.prototype.metric = function(name, value){
+  if(name){
+    this.set('metric', name);
+  }
+  if(value){
+    this.set('value', value);
+  }
   return this;
 };
 /**
@@ -76,7 +93,7 @@ Falcon.prototype.step = function(value){
  * @return {[type]} [description]
  */
 Falcon.prototype.type = function(value){
-  this.set.apply(this, [ 'counterType', value ]);
+  this.set.apply(this, [ 'counterType', value.toUpperCase() ]);
   return this;
 };
 /**
@@ -92,25 +109,28 @@ Falcon.prototype.tags = function(tags){
   return this;
 };
 
-Falcon.prototype.defaults = function(name){
-  switch(name){
-    case 'endpoint':
-      return os.hostname();
-    case 'timestamp':
-      return +new Date();
-    case 'counterType':
-      return 'COUNTER';
-    case 'step':
-      return 60;
-  }
-}
-
 Falcon.prototype.end = function(){
   var self = this;
-  [ 'endpoint', 'timestamp', 'metric', 'value', 'step', 'counterType', 'tags' ].map(function(key){
-    self.data[ key ] = self.data[ key ] || self.defaults(key);
-    if(typeof self.data[ key ] == 'undefined'){
-      throw new Error( `'${key}' is required .`)
+  ([
+    'step'        ,
+    'tags'        ,
+    'value'       ,
+    'metric'      ,
+    'endpoint'    ,
+    'timestamp'   ,
+    'counterType'
+  ]).map(function(key){
+    if(
+      typeof self.data[ key ]  == 'undefined' &&
+      typeof self.options[key] == 'undefined'
+    ) throw new Error( `'${key}' is required .`);
+    //
+    if(typeof self.data[key] == 'undefined'){
+      if(typeof self.options[key] == 'function'){
+        self.data[ key ] = self.options[key](self);
+      }else if(typeof self.options[key] != 'undefined'){
+        self.data[ key ] = self.options[key];
+      }
     }
   });
   this.queue.push(this.data);
@@ -133,41 +153,5 @@ Falcon.prototype.send = function(callback){
     });
   return this;
 };
-
-
-Falcon.memory = function(name){
-  return function(f){
-    var usage = process.memoryUsage();
-
-    f
-      .metric(`${name}.rss`)
-      .value(usage.rss)
-      .type(Falcon.COUNTER_TYPE.GAUGE)
-      .tags()
-      .end()
-
-    f
-      .metric(`${name}.heapTotal`)
-      .value(usage.heapTotal)
-      .type(Falcon.COUNTER_TYPE.GAUGE)
-      .tags()
-      .end()
-
-    f
-      .metric(`${name}.heapUsed`)
-      .value(usage.heapUsed)
-      .type(Falcon.COUNTER_TYPE.GAUGE)
-      .tags()
-      .end()
-
-  };
-};
-
-Falcon.cpu = function(name){
-  return function(f){
-    f.metric(name);
-  };
-};
-
 
 module.exports = Falcon;
