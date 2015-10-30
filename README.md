@@ -15,13 +15,17 @@ var Falcon = require('node-open-falcon');
 var falcon = new Falcon({
   endpoint: os.hostname()
 });
-//
-var usage = process.memoryUsage();
-for(var key in usage){
-  falcon.metric('memory.' + key, usage[key]).end();
-}
 
-falcon.send();
+//
+setInterval(function(){
+
+  var usage = process.memoryUsage();
+  for(var key in usage){
+    falcon.metric('memory.' + key, usage[key]).end();
+  }
+  falcon.send();
+
+});
 ```
 
 ### API

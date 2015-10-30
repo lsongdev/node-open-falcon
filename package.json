@@ -1,5 +1,5 @@
 {
-  "name": "node-open-falcon",
+  "name": "@myfe/open-falcon",
   "version": "1.0.1",
   "description": "open-falcon",
   "main": "index.js",
