@@ -9,13 +9,9 @@ $ npm install node-open-falcon --save
 
 ### Example
 ```js
-var os     = require('os');
-var Falcon = require('node-open-falcon');
-
-var falcon = new Falcon({
-  endpoint: os.hostname()
-});
-
+const Falcon = require('node-open-falcon');
+//
+const falcon = new Falcon({});
 //
 setInterval(function(){
 

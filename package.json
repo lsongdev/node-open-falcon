@@ -1,7 +1,7 @@
 {
-  "name": "@myfe/open-falcon",
+  "name": "node-open-falcon",
   "version": "1.0.1",
-  "description": "open-falcon",
+  "description": "open-falcon for node.js",
   "main": "index.js",
   "scripts": {
     "test": "node test/test.js"
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/song940/node-open-falcon#readme",
   "dependencies": {
-    "debug": "latest",
-    "superagent": "latest"
+    "debug": "*",
+    "superagent": "*"
   }
 }

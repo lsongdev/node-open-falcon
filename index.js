@@ -1,5 +1,6 @@
-var request = require('superagent');
-var debug   = require('debug')('open-falcon');
+const os 			= require('os');
+const request = require('superagent');
+const debug   = require('debug')('open-falcon');
 
 function Falcon(options){
   if(!(this instanceof Falcon)){
@@ -11,11 +12,11 @@ function Falcon(options){
     };
   }
   var self = this, defaults = {
-    tags        : ''          ,
-    step        : 60          ,
-    value       : 0           ,
-    endpoint    : 'localhost' ,
-    counterType : 'GAUGE'     ,
+    tags        : ''           ,
+    step        : 60           ,
+    value       : 0            ,
+    counterType : 'GAUGE'      ,
+    endpoint    : os.hostname(),
     api         : 'http://127.0.0.1:1988/v1/push',
     timestamp   : function(){
       return Math.floor(+new Date() / 1000);
